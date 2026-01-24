@@ -8,7 +8,7 @@ dotenv.config();
 
 import connectDB from './config/database.js';
 import orderRoutes from './routes/orderRoutes.js';
-import { errorHandler } from './middleware/ErrorHandler.js'; // Make sure this matches!
+import  errorHandler  from './middleware/ErrorHandler.js'; // Make sure this matches!
 
 const app = express();
 
