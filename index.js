@@ -1,90 +1,111 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import helmet from 'helmet';
-import morgan from 'morgan';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import helmet from "helmet";
+import morgan from "morgan";
+
+import connectDB from "./config/database.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import errorHandler from "./middleware/ErrorHandler.js";
 
 dotenv.config();
 
-import connectDB from './config/database.js';
-import orderRoutes from './routes/orderRoutes.js';
-import  errorHandler  from './middleware/ErrorHandler.js'; // Make sure this matches!
-
 const app = express();
 
-// Connect to database
+/* ================================
+   DATABASE
+================================ */
 connectDB();
 
-// CORS Configuration
+/* ================================
+   CORS CONFIG (FIXED)
+================================ */
 const allowedOrigins = [
-  'https://testro-booster.vercel.app',
-  'https://testro-booster.vercel.app',
+  "https://testro-booster.vercel.app",
   process.env.CLIENT_URL
 ].filter(Boolean);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow server-to-server, Postman, Render health checks
+      if (!origin) return callback(null, true);
 
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // ❌ DO NOT throw error
+      return callback(null, false);
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
+
+// 🔥 MUST HANDLE PREFLIGHT
+app.options("*", cors());
+
+/* ================================
+   MIDDLEWARES
+================================ */
 app.use(helmet());
-app.use(morgan('dev'));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(morgan("dev"));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Routes
-app.get('/', (req, res) => {
+/* ================================
+   ROUTES
+================================ */
+app.get("/", (req, res) => {
   res.json({
     success: true,
-    message: 'Testro Booster API',
-    version: '1.0.0',
-    status: 'active',
-    documentation: {
-      createOrder: 'POST /api/orders',
-      getOrder: 'GET /api/orders/:orderNumber',
-      health: 'GET /health'
+    message: "Testro Booster API",
+    version: "1.0.0",
+    status: "active",
+    endpoints: {
+      createOrder: "POST /api/orders",
+      getOrder: "GET /api/orders/:orderNumber",
+      health: "GET /health"
     }
   });
 });
 
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    service: 'Testro Booster API'
+    status: "healthy",
+    timestamp: new Date().toISOString()
   });
 });
 
-app.use('/api/orders', orderRoutes);
+app.use("/api/orders", orderRoutes);
 
-// 404 handler
-app.use((req, res, next) => {
+/* ================================
+   404 HANDLER
+================================ */
+app.use((req, res) => {
   res.status(404).json({
     success: false,
-    message: `Route ${req.originalUrl} not found`,
-    error: 'NOT_FOUND'
+    message: `Route ${req.originalUrl} not found`
   });
 });
 
-// Error handler - THIS MUST BE LAST
+/* ================================
+   ERROR HANDLER (LAST)
+================================ */
 app.use(errorHandler);
 
+/* ================================
+   SERVER
+================================ */
 const PORT = process.env.PORT || 4500;
 
 app.listen(PORT, () => {
   console.log(`
-🚀 Server started on port ${PORT}
-🌍 Environment: ${process.env.NODE_ENV || 'development'}
-🔗 API: http://localhost:${PORT}
+🚀 Server running on port ${PORT}
+🌍 Environment: ${process.env.NODE_ENV || "development"}
   `);
 });
 
