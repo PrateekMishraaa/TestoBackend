@@ -18,7 +18,7 @@ const app = express();
 connectDB();
 
 /* ================================
-   CORS CONFIG (FIXED)
+   CORS CONFIG (NODE 22 SAFE)
 ================================ */
 const allowedOrigins = [
   "https://testro-booster.vercel.app",
@@ -28,14 +28,13 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow server-to-server, Postman, Render health checks
+      // allow Postman, server-to-server, health checks
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      // ❌ DO NOT throw error
       return callback(null, false);
     },
     credentials: true,
@@ -44,11 +43,8 @@ app.use(
   })
 );
 
-// 🔥 MUST HANDLE PREFLIGHT
-app.options("*", cors());
-
 /* ================================
-   MIDDLEWARES
+   SECURITY & PARSERS
 ================================ */
 app.use(helmet());
 app.use(morgan("dev"));
@@ -59,7 +55,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
    ROUTES
 ================================ */
 app.get("/", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: "Testro Booster API",
     version: "1.0.0",
