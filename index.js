@@ -18,7 +18,7 @@ const app = express();
 connectDB();
 
 /* ================================
-   CORS CONFIG (NODE 22 SAFE)
+   CORS CONFIG
 ================================ */
 const allowedOrigins = [
   "https://testro-booster.vercel.app",
@@ -28,14 +28,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow Postman, server-to-server, health checks
+      // Allow Postman / server-to-server / health checks
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -57,14 +57,8 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Testro Booster API",
-    version: "1.0.0",
-    status: "active",
-    endpoints: {
-      createOrder: "POST /api/orders",
-      getOrder: "GET /api/orders/:orderNumber",
-      health: "GET /health"
-    }
+    message: "Testro Booster API is running 🚀",
+    environment: process.env.NODE_ENV || "development"
   });
 });
 
@@ -89,7 +83,7 @@ app.use((req, res) => {
 });
 
 /* ================================
-   ERROR HANDLER (LAST)
+   ERROR HANDLER
 ================================ */
 app.use(errorHandler);
 
@@ -99,10 +93,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 4500;
 
 app.listen(PORT, () => {
-  console.log(`
-🚀 Server running on port ${PORT}
-🌍 Environment: ${process.env.NODE_ENV || "development"}
-  `);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
 export default app;
