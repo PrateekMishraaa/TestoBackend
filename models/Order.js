@@ -47,9 +47,10 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  // FIXED: Added 'upi' to paymentMethod enum
   paymentMethod: {
     type: String,
-    enum: ['credit_card', 'paypal', 'bank_transfer', 'cod'],
+    enum: ['credit_card', 'paypal', 'bank_transfer', 'cod', 'upi'], // 'upi' added
     default: 'credit_card',
   },
   paymentStatus: {
@@ -72,34 +73,26 @@ const orderSchema = new mongoose.Schema({
     default: Date.now,
   },
 }, {
-  timestamps: true // This automatically handles createdAt and updatedAt
+  timestamps: true
 });
 
 // Generate order number before saving
-orderSchema.pre('save', async function() {
+orderSchema.pre('save', async function(next) {
   try {
-    // Only generate order number if it doesn't exist
     if (!this.orderNumber) {
       const date = new Date();
       const year = date.getFullYear().toString().slice(-2);
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const day = date.getDate().toString().padStart(2, '0');
       
-      // Start of today
-      const startOfToday = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      
-      // Count orders created today
-      const OrderModel = mongoose.model('Order');
-      const count = await OrderModel.countDocuments({
-        createdAt: { $gte: startOfToday }
-      });
-      
-      const sequential = (count + 1).toString().padStart(4, '0');
-      this.orderNumber = `HV${year}${month}${day}${sequential}`;
+      // Generate a simple unique order number
+      const timestamp = Date.now().toString().slice(-6);
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      this.orderNumber = `TB-${year}${month}${day}-${timestamp}${random}`;
     }
-    // next();
+    next();
   } catch (error) {
-    // next(error);
+    next(error);
   }
 });
 

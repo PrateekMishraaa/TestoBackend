@@ -1,5 +1,15 @@
 import Order from '../models/Order.js';
-import { sendOrderConfirmationEmail, sendAdminNotificationEmail } from '../services/emailService.js';
+import { 
+  sendOrderConfirmationEmail, 
+  sendAdminNotificationEmail 
+} from '../services/emailService.js';
+
+// Helper function to generate order number
+const generateOrderNumber = () => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 1000);
+  return `TB-${timestamp}-${random}`;
+};
 
 export const createOrder = async (req, res) => {
   try {
@@ -16,9 +26,18 @@ export const createOrder = async (req, res) => {
       notes,
     } = req.body;
 
+    // Validate required fields
+    if (!customerName || !customerEmail || !customerPhone || !shippingAddress || !products || !subtotal) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
     const totalAmount = subtotal + tax + shippingFee;
 
     const order = new Order({
+      orderNumber: generateOrderNumber(),
       customerName,
       customerEmail,
       customerPhone,
@@ -36,8 +55,30 @@ export const createOrder = async (req, res) => {
 
     const savedOrder = await order.save();
 
-    sendOrderConfirmationEmail(savedOrder).catch(console.error);
-    sendAdminNotificationEmail(savedOrder).catch(console.error);
+    // Send emails - handle errors gracefully
+    try {
+      // Send to customer
+      const customerResult = await sendOrderConfirmationEmail(savedOrder);
+      if (customerResult && customerResult.success) {
+        console.log(`✅ Order confirmation email sent to ${savedOrder.customerEmail}`);
+      } else {
+        console.error(`❌ Failed to send customer email:`, customerResult?.message);
+      }
+    } catch (emailError) {
+      console.error('Error sending customer email:', emailError.message);
+    }
+
+    try {
+      // Send to admin
+      const adminResult = await sendAdminNotificationEmail(savedOrder);
+      if (adminResult && adminResult.success) {
+        console.log(`✅ Admin notification email sent`);
+      } else {
+        console.error(`❌ Failed to send admin email:`, adminResult?.message);
+      }
+    } catch (emailError) {
+      console.error('Error sending admin email:', emailError.message);
+    }
 
     res.status(201).json({
       success: true,
