@@ -38,7 +38,7 @@ export const sendOrderConfirmationEmail = async (order) => {
     ).join('');
 
     const mailOptions = {
-      from: `"Testo Booster" <${process.env.SMTP_USER}>`,
+      from: `"Testro Booster" <${process.env.SMTP_USER}>`,
       to: order.customerEmail,
       subject: `🔥 Order Confirmation - ${order.orderNumber}`,
       html: `
@@ -59,19 +59,19 @@ export const sendOrderConfirmationEmail = async (order) => {
             .info-box { background-color: #1f2937; border-left: 4px solid #b45309; padding: 15px; margin: 20px 0; border-radius: 5px; }
             .highlight { color: #fbbf24; font-weight: bold; }
             .order-number { font-size: 24px; color: #fbbf24; font-weight: bold; }
-            .testo-logo { font-size: 28px; font-weight: bold; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .testro-logo { font-size: 28px; font-weight: bold; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1 class="testo-logo">TESTOBOOSTER</h1>
+              <h1 class="testro-logo">TESTROBOOSTER</h1>
               <h2 style="color: white; margin: 10px 0;">Order Confirmation</h2>
               <span class="energy-badge">⚡ Unleash Your Inner Power</span>
             </div>
             <div class="content">
               <p>Dear <span class="highlight">${order.customerName}</span>,</p>
-              <p>Thank you for choosing <strong>Testo Booster</strong>! Your order has been received and is being processed.</p>
+              <p>Thank you for choosing <strong>Testro Booster</strong>! Your order has been received and is being processed.</p>
               
               <div class="info-box">
                 <h3 style="margin: 0; color: #fbbf24;">🎯 Order Details</h3>
@@ -149,7 +149,7 @@ export const sendOrderConfirmationEmail = async (order) => {
               </div>
               
               <div style="background-color: #1f2937; border-radius: 10px; padding: 20px; margin: 20px 0; border: 1px solid #b45309;">
-                <h3 style="color: #fbbf24; margin-top: 0;">💡 Testo Booster Usage Tips</h3>
+                <h3 style="color: #fbbf24; margin-top: 0;">💡 Testro Booster Usage Tips</h3>
                 <ul style="margin: 10px 0; padding-left: 20px;">
                   <li>Take 1-2 capsules daily with water or milk</li>
                   <li>Best taken in the morning or before physical activity</li>
@@ -159,18 +159,18 @@ export const sendOrderConfirmationEmail = async (order) => {
               </div>
               
               <div style="text-align: center; margin: 30px 0;">
-                <p style="font-size: 18px; color: #fbbf24;">Unleash Your Energy Potential with Testo Booster! 💪</p>
-                <p>If you have any questions, contact us at <a href="mailto:support@testobooster.com" style="color: #fbbf24;">support@testobooster.com</a> or call +91 98765 43210</p>
+                <p style="font-size: 18px; color: #fbbf24;">Unleash Your Energy Potential with Testro Booster! 💪</p>
+                <p>If you have any questions, contact us at <a href="mailto:support@testrobooster.com" style="color: #fbbf24;">support@testrobooster.com</a> or call +91 98765 43210</p>
               </div>
               
-              <p>Best regards,<br><strong>The Testo Booster Team</strong></p>
+              <p>Best regards,<br><strong>The Testro Booster Team</strong></p>
             </div>
             <div class="footer">
-              <p>© ${new Date().getFullYear()} Testo Booster. All rights reserved.</p>
+              <p>© ${new Date().getFullYear()} Testro Booster. All rights reserved.</p>
               <p>Premium Male Vitality Support Formula • Made in India 🇮🇳</p>
               <p>This is an automated email, please do not reply directly.</p>
               <p style="margin-top: 10px; font-size: 11px; color: #6b7280;">
-                ⚠️ Disclaimer: Testo Booster is a wellness supplement. Results may vary. Consult your healthcare professional before use.
+                ⚠️ Disclaimer: Testro Booster is a wellness supplement. Results may vary. Consult your healthcare professional before use.
               </p>
             </div>
           </div>
@@ -180,7 +180,7 @@ export const sendOrderConfirmationEmail = async (order) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`📧 Testo Booster order confirmation email sent to ${order.customerEmail}: ${info.messageId}`);
+    console.log(`📧 Testro Booster order confirmation email sent to ${order.customerEmail}: ${info.messageId}`);
     return info;
   } catch (error) {
     console.error(`❌ Error sending email:`, error);
@@ -204,9 +204,9 @@ export const sendAdminNotificationEmail = async (order) => {
     };
     
     const mailOptions = {
-      from: `"Testo Booster Order System" <${process.env.SMTP_USER}>`,
+      from: `"Testro Booster Order System" <${process.env.SMTP_USER}>`,
       to: process.env.ADMIN_EMAIL || process.env.SMTP_USER,
-      subject: `🚀 NEW TESTO BOOSTER ORDER - ${order.orderNumber}`,
+      subject: `🚀 NEW TESTRO BOOSTER ORDER - ${order.orderNumber}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -224,18 +224,18 @@ export const sendAdminNotificationEmail = async (order) => {
             .highlight { color: #fbbf24; font-weight: bold; }
             .urgent { color: #ef4444; font-weight: bold; }
             .action-button { background: linear-gradient(to right, #991b1b, #b45309); color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 10px 0; }
-            .testo-logo { font-size: 24px; font-weight: bold; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            .testro-logo { font-size: 24px; font-weight: bold; background: linear-gradient(to right, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1 class="testo-logo">TESTO BOOSTER</h1>
+              <h1 class="testro-logo">TESTRO BOOSTER</h1>
               <h2 style="color: white; margin: 10px 0;">New Order Alert</h2>
             </div>
             <div class="content">
               <div class="alert">
-                <strong>🚀 URGENT: NEW TESTO BOOSTER ORDER!</strong><br>
+                <strong>🚀 URGENT: NEW TESTRO BOOSTER ORDER!</strong><br>
                 <span style="font-size: 14px;">Action Required: Process within 24 hours</span>
               </div>
               
@@ -290,7 +290,7 @@ export const sendAdminNotificationEmail = async (order) => {
                 <tbody>
                   ${order.products.map(product => `
                     <tr>
-                      <td>Testo Booster Capsule</td>
+                      <td>Testro Booster Capsule</td>
                       <td>${product.capsuleType}</td>
                       <td>${product.quantity}</td>
                       <td>${formatINR(product.price)}</td>
@@ -313,12 +313,12 @@ export const sendAdminNotificationEmail = async (order) => {
               <div style="background-color: #1f2937; padding: 20px; border-radius: 10px; margin: 30px 0; border: 1px solid #374151;">
                 <h3 style="color: #fbbf24; margin-top: 0;">📋 Next Steps (Process Immediately)</h3>
                 <ol style="margin: 10px 0; padding-left: 20px;">
-                  <li><strong>1.</strong> Confirm inventory for Testo Booster ${order.products[0].capsuleType}</li>
+                  <li><strong>1.</strong> Confirm inventory for Testro Booster ${order.products[0].capsuleType}</li>
                   <li><strong>2.</strong> Process order within 24 hours</li>
                   <li><strong>3.</strong> Generate shipping label</li>
                   <li><strong>4.</strong> Update order status to "Processing"</li>
                   <li><strong>5.</strong> Send tracking information to customer</li>
-                  <li><strong>6.</strong> Prepare Testo Booster package with care</li>
+                  <li><strong>6.</strong> Prepare Testro Booster package with care</li>
                 </ol>
               </div>
               
@@ -336,13 +336,13 @@ export const sendAdminNotificationEmail = async (order) => {
                 <ul style="margin: 5px 0; padding-left: 20px;">
                   <li>Order Value: ${formatINR(order.totalAmount)}</li>
                   <li>Customer Location: ${order.shippingAddress.city}, ${order.shippingAddress.state}</li>
-                  <li>Product Type: Testo Booster ${order.products[0].capsuleType}</li>
+                  <li>Product Type: Testro Booster ${order.products[0].capsuleType}</li>
                   <li>Quantity: ${order.products[0].quantity} ${order.products[0].quantity === 1 ? 'Bottle' : 'Bottles'}</li>
                 </ul>
               </div>
               
               <p style="margin-top: 20px; font-size: 12px; color: #6b7280;">
-                ⚡ This is an automated notification from Testo Booster Order System.
+                ⚡ This is an automated notification from Testro Booster Order System.
               </p>
             </div>
           </div>
@@ -352,7 +352,7 @@ export const sendAdminNotificationEmail = async (order) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`📧 Testo Booster admin notification email sent: ${info.messageId}`);
+    console.log(`📧 Testro Booster admin notification email sent: ${info.messageId}`);
     return info;
   } catch (error) {
     console.error(`❌ Error sending admin email:`, error);

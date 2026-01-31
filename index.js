@@ -3,8 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
+import mongoose from "mongoose";
 
-import connectDB from "./config/database.js";
+// Import routes and middleware
 import orderRoutes from "./routes/orderRoutes.js";
 import errorHandler from "./middleware/ErrorHandler.js";
 
@@ -13,30 +14,56 @@ dotenv.config();
 const app = express();
 
 /* ================================
-   DATABASE
+   DEBUG: Environment check
 ================================ */
-connectDB();
+console.log("🔍 Environment Check:");
+console.log("- NODE_ENV:", process.env.NODE_ENV || "development");
+console.log("- PORT:", process.env.PORT);
+console.log(process.env.PORT,"this is port")
+console.log("- MONGODB_URI exists:", !!process.env.MONGODB_URI);
+console.log("- CLIENT_URL:", process.env.CLIENT_URL);
+
+/* ================================
+   DATABASE CONNECTION
+================================ */
+const connectDB = async () => {
+  try {
+    const mongoURI = process.env.MONGODB_URI || process.env.MONGO_URI;
+    
+    if (!mongoURI) {
+      throw new Error("MongoDB URI not found in environment variables");
+    }
+    
+    console.log("🔗 Connecting to MongoDB...");
+    await mongoose.connect(mongoURI, {
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    });
+    
+    console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+    console.log("uri",process.env.MONGODB_URI)
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error.message);
+    console.error("💡 Make sure MONGODB_URI is set in Render environment variables");
+    process.exit(1);
+  }
+};
+
+// Connect to database
+await connectDB();
 
 /* ================================
    CORS CONFIG
 ================================ */
 const allowedOrigins = [
   "https://testro-booster.vercel.app",
+  "http://localhost:3000",
   process.env.CLIENT_URL
 ].filter(Boolean);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow Postman / server-to-server / health checks
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -66,6 +93,7 @@ app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
     status: "healthy",
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
     timestamp: new Date().toISOString()
   });
 });
@@ -92,8 +120,20 @@ app.use(errorHandler);
 ================================ */
 const PORT = process.env.PORT || 4500;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`\n✅ Server running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`🔗 Health endpoint: http://localhost:${PORT}/health\n`);
 });
 
-export default app;
+/* ================================
+   GRACEFUL SHUTDOWN
+================================ */
+process.on("SIGTERM", () => {
+  console.log("🛑 SIGTERM received. Shutting down gracefully...");
+  server.close(() => {
+    console.log("✅ Server closed.");
+    mongoose.connection.close();
+    process.exit(0);
+  });
+});
