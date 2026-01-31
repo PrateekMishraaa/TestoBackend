@@ -56,7 +56,7 @@ await connectDB();
    CORS CONFIG
 ================================ */
 const allowedOrigins = [
-  "https://testro-booster.vercel.app",
+  "https://anshveda.in",
   "http://localhost:3000",
   process.env.CLIENT_URL
 ].filter(Boolean);
