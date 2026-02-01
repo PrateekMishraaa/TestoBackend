@@ -4,14 +4,20 @@ import {
   getOrderByNumber,
   getAllOrders,
   updateOrderStatus,
+  testEmail,
+  getOrderStats
 } from '../controllers/orderController.js';
-import { validateOrder } from '../middleware/Validation.js';
 
 const router = express.Router();
 
-router.post('/', validateOrder, createOrder);
+// 📧 Email test endpoint
+router.get('/test-email', testEmail);
+
+// 📦 Order routes
+router.post('/', createOrder);
+router.get('/stats', getOrderStats);
 router.get('/:orderNumber', getOrderByNumber);
 router.get('/', getAllOrders);
-router.put('/:orderNumber/status', updateOrderStatus);
+router.patch('/:orderNumber/status', updateOrderStatus);
 
 export default router;
